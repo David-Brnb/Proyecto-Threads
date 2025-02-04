@@ -2,7 +2,7 @@
 // //
 // // File: PrimosHilos.cpp
 // // Author: David Bernabe
-// // Description: This file implements the counting of prime numbers in a segment of numbers
+// // Description: This file implements the adding all prime numbers in a segment of numbers
 // //		using C/C++ threads. To compile:
 // //		g++ -o app PrimosHilos.cpp
 // //
