@@ -16,13 +16,13 @@
 #include <iomanip>
 #include <chrono>
 #include <thread>
-#include "utils.h"
 
 using namespace std;
 using namespace std::chrono;
 
 #define SIZE   5000000 // 1e9
 #define THREADS std::thread::hardware_concurrency()
+#define N 10
 
 void getSum(int start, int end, long long &sum) {
     sum=0;

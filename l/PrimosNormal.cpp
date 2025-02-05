@@ -16,12 +16,12 @@
 #include <iomanip>
 #include <chrono>
 #include <thread>
-#include "utils.h"
 
 using namespace std;
 using namespace std::chrono;
 
-#define SIZE    5e6 // 5e9 o 5 millones 
+#define SIZE 5000000 // 5e9 o 5 millones 
+#define N 10
 
 void getSum(long long &sum, int size) {
     sum=0;
