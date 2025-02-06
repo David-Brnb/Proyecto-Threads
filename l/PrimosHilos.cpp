@@ -1,14 +1,13 @@
 // =================================================================
 //
-// File: SumaPares.cpp
-// Author: David Bernabe
-// Description: This file implements the counting of pair numbers in an array
-//		using C/C++ threads. To compile:
-//		g++ -o app SumaPares.cpp
+// Archivo: SumaPares.cpp
+// Autor: David Bernabe
+// Descripción: Este archivo implementa el conteo de números primos en un arreglo
+//              utilizando hilos en C/C++. Para compilar:
+//              g++ -o app SumaPares.cpp -pthread
 //
-// Copyright (c) 2024 by Tecnologico de Monterrey.
-// All Rights Reserved. May be reproduced for any non-commercial
-// purpose.
+// Copyright (c) 2024 por Tecnológico de Monterrey.
+// Todos los derechos reservados. Puede reproducirse para cualquier propósito no comercial.
 //
 // =================================================================
 
@@ -20,83 +19,78 @@
 using namespace std;
 using namespace std::chrono;
 
-#define SIZE   5000000 // 5e9
-#define THREADS std::thread::hardware_concurrency()
-#define N 10
+#define SIZE   5000000 // Tamaño del arreglo a evaluar
+#define THREADS std::thread::hardware_concurrency() // Número de hilos basados en el hardware
+#define N 10 // Número de iteraciones para promediar el tiempo
 
 /*
-    Definimos getSum
-    Este método nos permitirá sumar a todos
-    de números primos desde start hasta end. 
-    La complejidad temporal es O(n*√n)
+    Función que calcula la suma de los números primos en un rango determinado.
+    - Se recorre el rango desde 'start' hasta 'end'.
+    - Se verifica si un número es primo evaluando sus divisores.
+    - Si es primo, se acumula en la variable 'sum'.
+    - Complejidad temporal: O(n * √n).
 */
 void getSum(int start, int end, long long &sum) {
-    sum=0;
+    sum = 0;
 
     for (int i = start; i < end; i++) {
-        if(i<2){
-            continue;
+        if (i < 2) continue;
+        
+        bool esPrimo = true;
+        for (int j = 2; j * j <= i; j++) {
+            if (i % j == 0) {
+                esPrimo = false;
+                break;
+            }
         }
-        bool res=1;
-
-        for(int j=2; j*j <= i; j++){
-            if(i%j==0) res=0;
-        }
-
-        if(res) sum+=i;
+        
+        if (esPrimo) sum += i;
     }
 }
 
 int main(int argc, char* argv[]) {
-
-    // These variables are used to keep track of the execution time.
+    // Variables para medir el tiempo de ejecución
     high_resolution_clock::time_point startTime, endTime;
     double timeElapsed;
 
-    // Estas variables son usadas para el manejo de hilos
+    // Variables para el manejo de hilos
     int end, blockSize;
     thread threads[THREADS];
     long long result[THREADS];
-    blockSize = SIZE / THREADS;
+    blockSize = SIZE / THREADS; // Tamaño del bloque asignado a cada hilo
 
-    // Se comienza el proceso pero ahora delegando la tarea a 
-    // varios hilos a la vez, de forma segmentada.
-    cout << "Starting...\n";
+    // Se inicia la ejecución con múltiples hilos en paralelo
+    cout << "Iniciando ejecución...\n";
     timeElapsed = 0;
     long long totalSum;
+    
     for (int j = 0; j < N; j++) {
-        // Inico del conteo del tiempo
+        // Inicio del conteo de tiempo
         startTime = high_resolution_clock::now();
 
-        // Se realiza el llamado de los hilos dandoles
-        // un determinado inicio, así como un determinado fin,
-        // de acuerdo a la lógica  correspondiente.
+        // Creación y ejecución de los hilos asignándoles su respectivo rango
         for (int i = 0; i < THREADS; i++) {
-            end = (i != (THREADS - 1))? (i + 1) * blockSize : SIZE;
+            end = (i != (THREADS - 1)) ? (i + 1) * blockSize : SIZE;
             threads[i] = thread(getSum, (i * blockSize), end, std::ref(result[i]));
         }
 
-        // Se espera a que termine cada hilo, y tras haber 
-        // finalizado, se recopila toda la cantidad de
-        // primos calculada por cada hilo en la variable
-        // totalSum.
-        totalSum=0;
+        // Esperamos a que todos los hilos finalicen su ejecución
+        // y acumulamos los resultados parciales en 'totalSum'.
+        totalSum = 0;
         for (int i = 0; i < THREADS; i++) {
             threads[i].join();
-            totalSum+=result[i];
+            totalSum += result[i];
         }
-        cout << totalSum << endl;
+        cout << "Suma total de primos: " << totalSum << endl;
 
-        // Fin del conteo del tiempo y recopilación de los tiempos 
+        // Fin del conteo de tiempo y acumulación de tiempos
         endTime = high_resolution_clock::now();
-        timeElapsed += 
-            duration<double, std::milli>(endTime - startTime).count();
+        timeElapsed += duration<double, std::milli>(endTime - startTime).count();
     }
 
-    // Se imprime el promedio del tiempo que se dedico al métdo
-    // mediante el uso del hilos.
-    cout << "avg time = " << fixed << setprecision(3) 
-         << (timeElapsed / N) <<  " ms\n";
+    // Se imprime el tiempo promedio de ejecución del método con hilos
+    cout << "Tiempo promedio = " << fixed << setprecision(3) 
+         << (timeElapsed / N) << " ms\n";
 
     return 0;
 }
