@@ -20,9 +20,15 @@
 using namespace std;
 using namespace std::chrono;
 
-#define SIZE 5000000 // 5e9 o 5 millones 
+#define SIZE 5000000 // 5e9
 #define N 10
 
+/*
+    Definimos getSum
+    Este método nos permitirá sumar a todos
+    de números primos desde 0 hasta size. 
+    La complejidad temporal es O(n*√n)
+*/
 void getSum(long long &sum, int size) {
     sum=0;
 
@@ -46,18 +52,29 @@ int main(int argc, char* argv[]) {
     high_resolution_clock::time_point startTime, endTime;
     double timeElapsed;
 
+    // Se comienza una pruebla que consta de 10 corridas
+    // del método que linealmente nos dice la suma de 
+    // los números primos.
+    // En cada iteración, nosotros tomamos el tiempo 
+    // de inicio y de término, sumando los tiempos
+    // para al final imprimir el promedio.
     cout << "Starting...\n";
     long long totalSum;
     for (int j = 0; j < N; j++) {
+        // Iniciamos el reloj
         startTime = high_resolution_clock::now();
         
+        // Hacemos la prueba e imprimimos el resultado
         getSum(totalSum, SIZE);
         cout << totalSum << endl;
 
+        // Terminamos el reloj y sumamos el sapso de tiempo;
         endTime = high_resolution_clock::now();
         timeElapsed += 
             duration<double, std::milli>(endTime - startTime).count();
     }
+
+    // Imprimimos el promedio de tiempos
     cout << "avg time = " << fixed << setprecision(3) 
          << (timeElapsed / N) <<  " ms\n";
 
